@@ -1,156 +1,111 @@
 <!doctype html>
-
 <html lang="th">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>สืบคดีปริศนาหมอยาตำรับโคมแดง — SS1 & SS2 (โค้ดเดียว)</title>
+  <title>สืบคดีปริศนาหมอยาตำรับโคมแดง — Ep.1–24</title>
   <style>
-    :root{--bg:#0b0a0a;--panel:#171314;--ink:#f5e9da;--muted:#d8cbb9;--red:#b71c1c;--gold:#c7a56a}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,"Noto Sans Thai",sans-serif;background:var(--bg);color:var(--ink)}
-    header{position:sticky;top:0;background:#121011;padding:12px 16px;border-bottom:1px solid #ffffff22}
+    body{margin:0;font-family:system-ui,"Noto Sans Thai",sans-serif;background:#0b0a0a;color:#f5e9da}
+    header{position:sticky;top:0;background:#121011;padding:12px 16px;border-bottom:1px solid #ffffff14}
     h1{margin:0;font-size:18px}
     .wrap{max-width:1000px;margin:auto;padding:16px}
-    .tools{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-    .btn{padding:8px 12px;border-radius:10px;border:1px solid #ffffff22;background:#ffffff12;color:var(--ink);cursor:pointer}
-    .btn.active{background:var(--red);border-color:#e53935}
-    input[type="search"]{flex:1;min-width:160px;padding:8px 10px;border-radius:10px;border:1px solid #ffffff22;background:#171314;color:var(--ink)}
-    select{padding:8px 10px;border-radius:10px;border:1px solid #ffffff22;background:#171314;color:var(--ink)}
+    .tools{display:flex;gap:8px;margin-top:8px}
+    input[type="search"]{flex:1;padding:8px 10px;border-radius:10px;border:1px solid #ffffff22;background:#171314;color:#f5e9da}
+    button{padding:8px 12px;border-radius:10px;border:1px solid #ffffff22;background:#ffffff12;color:#f5e9da;cursor:pointer}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-    .card{border:1px solid #ffffff22;border-radius:12px;background:var(--panel);overflow:hidden}
+    .card{border:1px solid #ffffff1a;border-radius:12px;background:#171314;overflow:hidden}
     .thumb{aspect-ratio:16/9;background:#1e1416}
     .meta{padding:10px 12px}
-    .ep{font-weight:700;color:var(--gold);font-size:12px}
+    .ep{font-weight:700;color:#c7a56a;font-size:12px}
     .name{margin-top:4px;font-weight:700}
     .actions{display:flex;gap:8px;padding:10px 12px}
-    dialog{border:none;border-radius:12px;background:var(--panel);color:var(--ink);width:min(900px,96vw)}
+    dialog{border:none;border-radius:12px;background:#171314;color:#f5e9da;width:min(900px,96vw)}
     dialog::backdrop{background:rgba(0,0,0,.7)}
     video{width:100%;max-height:70vh;background:#000;border-radius:10px;border:1px solid #ffffff1a}
-    .err{margin-top:8px;color:#ffb3b3;font-size:12px;display:none}
-    footer{opacity:.8;text-align:center;padding:18px;font-size:12px}
   </style>
 </head>
 <body>
   <header>
     <div class="wrap">
-      <h1>สืบคดีปริศนาหมอยาตำรับโคมแดง — SS1 & SS2</h1>
+      <h1>สืบคดีปริศนาหมอยาตำรับโคมแดง — Ep.1–24</h1>
       <div class="tools">
-        <button id="ss1Btn" class="btn active">ซีซัน 1</button>
-        <button id="ss2Btn" class="btn">ซีซัน 2</button>
         <input id="q" type="search" placeholder="ค้นหา: Ep หรือคำสำคัญ" />
-        <select id="numMode" title="เลือกรูปแบบหมายเลขไฟล์">
-          <option value="N">Ep.1..24</option>
-          <option value="NN">Ep.01..24</option>
-        </select>
-        <button id="sortBtn" class="btn">สลับเรียงใหม่↔เก่า</button>
+        <button id="sortBtn">สลับเรียงใหม่↔เก่า</button>
       </div>
     </div>
-  </header>  <main class="wrap">
+  </header>
+
+  <main class="wrap">
     <section id="grid" class="grid"></section>
-  </main>  <footer>โค้ดเดียว • ไฟล์ .mp4 อยู่โฟลเดอร์เดียวกับหน้านี้ • ใช้ส่วนตัวเท่านั้น</footer>  <dialog id="modal">
+  </main>
+
+  <dialog id="modal">
     <div style="padding:12px">
       <h3 id="mTitle" style="margin:0 0 6px">Ep. ??</h3>
       <div id="mMeta" style="opacity:.8;font-size:14px;margin-bottom:8px">—</div>
       <video id="player" controls preload="metadata"></video>
-      <div class="err" id="errBox"></div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
-        <a id="openRaw" class="btn" href="#" target="_blank" rel="noopener">เปิดลิงก์ไฟล์</a>
-        <button id="mClose" class="btn">ปิด</button>
+        <button id="mClose">ปิด</button>
       </div>
     </div>
-  </dialog>  <script>
-    /* ================= CONFIG =================
-       ปรับชื่อไฟล์ตามที่คุณตั้งจริง (อยู่ในโฟลเดอร์เดียวกับ index.html)
-       ใช้ตัวแปร {N} สำหรับ Ep.1..24 หรือ {NN} สำหรับ Ep.01..24
-    */
-    let NUMBER_MODE = localStorage.getItem('numMode') || 'N'; // 'N' หรือ 'NN'
+  </dialog>
 
-    // รูปแบบชื่อไฟล์ของแต่ละซีซัน (แก้เฉพาะข้อความไทยตามที่คุณตั้งจริง)
-    const FILE_PATTERN_SS1 = 'Ep.{X}หมอยาตำรับโคมแดงSS1.mp4';
-    const FILE_PATTERN_SS2 = 'Ep.{X}หมอยาตำรับโคมแดงSS2.mp4';
-    // ===========================================
+  <script>
+    /* ====== CONFIG (ไฟล์อยู่โฟลเดอร์เดียวกับ index.html) ====== */
+    // ถ้าชื่อไฟล์เป็น Ep.1…Ep.24 ใช้ {N}
+    // ถ้าชื่อไฟล์เป็น Ep.01…Ep.24 ใช้ {NN}
+    const FILE_PATTERN = 'Ep.{N}สืบคดีปริศนาหมอยาตำรับโคมแดงSS2พากย์ไทย.mp4';
+    /* ============================================================ */
 
-    const $ = (q, el=document)=> el.querySelector(q)
-    const grid = $('#grid'), qInput = $('#q'), sortBtn = $('#sortBtn')
-    const ss1Btn = $('#ss1Btn'), ss2Btn = $('#ss2Btn'), numModeSel = $('#numMode')
-
-    const modal=$('#modal'), player=$('#player'), mTitle=$('#mTitle'), mMeta=$('#mMeta'), errBox=$('#errBox'), openRaw=$('#openRaw')
-
-    let currentSeason='ss1', sortDesc=false
-
-    function fmtNumber(n){ return NUMBER_MODE==='NN' ? String(n).padStart(2,'0') : String(n) }
-    function patternForSeason(){ return currentSeason==='ss1' ? FILE_PATTERN_SS1 : FILE_PATTERN_SS2 }
-    function buildName(n){ return patternForSeason().replace('{X}', fmtNumber(n)) }
-    function urlEp(n){ return encodeURIComponent(buildName(n)) }
-
-    function buildEpisodes(){
-      return Array.from({length:24},(_,i)=>({
-        id:i+1,
-        title:`Ep. ${String(i+1).padStart(2,'0')}`,
-        name:`ตอนที่ ${String(i+1).padStart(2,'0')} — ${currentSeason==='ss1'?'โคมแดง SS1':'โคมแดง SS2'}`,
-        url:urlEp(i+1)
-      }))
+    function fmtName(n){
+      const NN = String(n).padStart(2,'0');
+      return FILE_PATTERN.replaceAll('{NN}',NN).replaceAll('{N}',String(n));
     }
+    function urlEp(n){ return encodeURIComponent(fmtName(n)); }
+
+    const EPISODES = Array.from({length:24}, (_,i)=>({
+      id: i+1,
+      title: `Ep. ${String(i+1).padStart(2,'0')}`,
+      name: `ตอนที่ ${String(i+1).padStart(2,'0')} — โคมแดง`,
+      url: urlEp(i+1)
+    }));
+
+    const $ = (q,el=document)=>el.querySelector(q);
+    const grid=$('#grid'), modal=$('#modal'), player=$('#player'), mTitle=$('#mTitle'), mMeta=$('#mMeta'), q=$('#q');
+    let sortDesc=false;
 
     function card(ep){
-      const el=document.createElement('article'); el.className='card'
-      el.innerHTML = `
-        <div class="thumb"></div>
-        <div class="meta">
-          <div class="ep">${ep.title}</div>
-          <div class="name">${ep.name}</div>
-        </div>
-        <div class="actions">
-          <button class="btn" data-act="play">เล่น</button>
-          <a class="btn" href="${ep.url}" target="_blank" rel="noopener">เปิดลิงก์</a>
-        </div>`
-      el.addEventListener('click',ev=>{ if(ev.target.dataset.act==='play') open(ep) })
-      return el
+      const el=document.createElement('article'); el.className='card';
+      el.innerHTML=`<div class="thumb"></div>
+        <div class="meta"><div class="ep">${ep.title}</div><div class="name">${ep.name}</div></div>
+        <div class="actions"><button data-act="play">เล่น</button>
+        <a class="btn" href="${ep.url}" target="_blank">เปิดลิงก์</a></div>`;
+      el.addEventListener('click',ev=>{
+        if(ev.target.dataset.act==='play') open(ep);
+      });
+      return el;
     }
 
     function render(){
-      grid.innerHTML=''
-      let data = buildEpisodes()
-      if(sortDesc) data.reverse()
-      const s=(qInput.value||'').toLowerCase()
-      data.filter(ep=> !s || (ep.title+ep.name).toLowerCase().includes(s))
-          .forEach(ep=> grid.appendChild(card(ep)))
-      // toggle active state
-      ss1Btn.classList.toggle('active', currentSeason==='ss1')
-      ss2Btn.classList.toggle('active', currentSeason==='ss2')
-      // ตั้งค่าตัวเลือกหมายเลขให้ตรง
-      numModeSel.value = NUMBER_MODE
+      grid.innerHTML='';
+      let data=[...EPISODES];
+      if(sortDesc) data.reverse();
+      const s=(q.value||'').toLowerCase();
+      data.filter(ep=>!s||(ep.title+ep.name).toLowerCase().includes(s))
+          .forEach(ep=>grid.appendChild(card(ep)));
     }
-
-    function clearVideoError(){ errBox.textContent=''; errBox.style.display='none' }
-    function showVideoError(msg){ errBox.textContent = 'เล่นวิดีโอไม่ได้: ' + msg + ' | URL: ' + player.currentSrc; errBox.style.display='block' }
 
     function open(ep){
-      mTitle.textContent = ep.title
-      mMeta.textContent  = ep.name
-      clearVideoError()
-      const url = ep.url
-      player.src = url
-      openRaw.href = url
-      modal.showModal()
+      mTitle.textContent=ep.title;
+      mMeta.textContent=ep.name;
+      player.src=ep.url;
+      modal.showModal();
     }
 
-    player.addEventListener('error', ()=>{
-      const e = player.error
-      const map = {1:'USER_ABORT',2:'NETWORK (โหลดไฟล์ไม่ได้)',3:'DECODE (ถอดรหัสไม่ได้)',4:'SRC_NOT_SUPPORTED (ไฟล์/URL ไม่รองรับ)'}
-      showVideoError(e? map[e.code] || ('code='+e.code) : 'ไม่ทราบสาเหตุ')
-    })
-
-    // Events
-    qInput.oninput = render
-    sortBtn.onclick = ()=>{ sortDesc=!sortDesc; render() }
-    ss1Btn.onclick = ()=>{ currentSeason='ss1'; render() }
-    ss2Btn.onclick = ()=>{ currentSeason='ss2'; render() }
-    $('#mClose').onclick = ()=>{ player.pause(); modal.close() }
-    numModeSel.onchange = ()=>{ NUMBER_MODE = numModeSel.value; localStorage.setItem('numMode', NUMBER_MODE); render() }
-
-    // start
-    render()
-  </script></body>
+    $('#mClose').onclick=()=>{player.pause();modal.close();};
+    q.oninput=render;
+    $('#sortBtn').onclick=()=>{sortDesc=!sortDesc;render();};
+    render();
+  </script>
+</body>
 </html>
