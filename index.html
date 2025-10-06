@@ -57,47 +57,28 @@ dialog::backdrop{background:rgba(0,0,0,.7)}
     <div class="actions"><button class="btn" id="mClose">ปิด</button></div>
   </div>
 </dialog><script>
-/***************** CONFIG — แก้ค่าให้ตรง GitHub ของคุณ *****************/
-// เลือกโหมดลิงก์: 'RAW' (raw.githubusercontent.com) หรือ 'PAGES' (GitHub Pages)
-const MODE = 'PAGES'
-// กรอกข้อมูล repo ของคุณ
-const GH = {
-  owner: 'your-username',       // ← ใส่ของคุณ
-  repo:  'your-repo',           // ← ใส่ของคุณ
-  branch:'main',                // ใช้เมื่อ MODE='PAGES'
-  basePath: 'videos',           // โฟลเดอร์เก็บไฟล์ mp4 (ว่างได้)
-  pagesBase: 'https://your-username.github.io/your-repo' // ใช้เมื่อ MODE='PAGES'
-}
+/*========== CONFIG แบบเรียบง่าย (ไฟล์อยู่โปรเจกต์เดียวกับ GitHub) ==========*/
+// วาง index.html และโฟลเดอร์วิดีโอไว้ใน repo เดียวกัน
+// ตัวอย่างโครงสร้าง:
+//   / (root ของ repo)
+//     index.html
+//     /videos
+//       Ep.1สืบคดีปริศนาหมอยาตำรับโคมแดงSS2พากย์ไทย.mp4
+//       ... Ep.24สืบคดีปริศนาหมอยาตำรับโคมแดงSS2พากย์ไทย.mp4
+
+// โฟลเดอร์วิดีโอสัมพัทธ์จากหน้าเว็บนี้
+const BASE_PATH = 'videos'
 // แพทเทิร์นชื่อไฟล์รายตอน — ใช้ {N} (1..24) หรือ {NN} (01..24)
 const FILE_PATTERN = 'Ep.{N}สืบคดีปริศนาหมอยาตำรับโคมแดงSS2พากย์ไทย.mp4'
-/************************************************************************/
 
-function ghBase(){
-  const bp = GH.basePath ? '/' + GH.basePath.replace(/^\/+|\/+$/g,'') : ''
-  if(MODE==='RAW') return `https://raw.githubusercontent.com/${GH.owner}/${GH.repo}/${GH.branch}${bp}`
-  return `${GH.pagesBase.replace(/\/$/,'')}${bp}`
-}
 function fmtName(n){ const NN = String(n).padStart(2,'0'); return FILE_PATTERN.replaceAll('{NN}',NN).replaceAll('{N}',String(n)) }
-function urlEp(n){ return `${ghBase()}/${encodeURIComponent(fmtName(n))}` }
-
-const EPISODES = Array.from({length:24}, (_,i)=>({
-  id:i+1,
-  title:`Ep. ${String(i+1).padStart(2,'0')}`,
-  name:`ตอนที่ ${String(i+1).padStart(2,'0')} — โคมแดง`,
-  url: urlEp(i+1)
-}))
-
-const $ = (q,el=document)=> el.querySelector(q)
-const grid = $('#grid')
-const modal = $('#modal'), player=$('#player'), mTitle=$('#mTitle'), mMeta=$('#mMeta'), q=$('#q')
-let sortDesc = false
-
-function card(ep){
-  const el = document.createElement('article'); el.className='card'; el.dataset.id = ep.id
-  el.innerHTML = `
-    <div class="thumb"></div>
-    <div class="meta">
-      <div class="ep">${ep.title}</div>
+function urlEp(n){
+  const base = BASE_PATH ? `${BASE_PATH.replace(/\/$/, '')}/` : ''
+  return `${base}${encodeURIComponent(fmtName(n))}`
+}
+/*=================================================================*/
+// เลือกโหมดลิงก์: 'RAW' (raw.githubusercontent.com) หรือ 'PAGES' (GitHub Pages)
+// (โหมด GitHub RAW/Pages ไม่จำเป็นแล้ว เพราะใช้พาธสัมพัทธ์ภายในโปรเจกต์เดียว)</div>
       <div class="name">${ep.name}</div>
     </div>
     <div class="actions">
