@@ -1,116 +1,111 @@
 <!doctype html>
-
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>สืบคดีปริศนาหมอยาตำรับโคมแดง | Ep.1–24 (โค้ดเดียว เรียบง่าย)</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;500;800&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#0b0a0a;--panel:#171314;--ink:#f5e9da;--muted:#d8cbb9;--red:#b71c1c;--gold:#c7a56a;--r:14px}
-*{box-sizing:border-box} html,body{height:100%}
-body{margin:0;background:radial-gradient(900px 400px at 90% -10%,rgba(183,28,28,.2),transparent 60%),#0b0a0a;color:var(--ink);font-family:"Noto Sans Thai",system-ui,sans-serif}
-header{position:sticky;top:0;z-index:9;background:linear-gradient(to bottom,rgba(11,10,10,.95),rgba(11,10,10,.6));border-bottom:1px solid rgba(255,255,255,.06)}
-.wrap{max-width:1000px;margin:auto;padding:14px}
-.h1{font-weight:800;letter-spacing:.3px}
-.sub{color:var(--muted);font-size:12px;margin-top:4px}
-.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.search{flex:1 1 320px;display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px}
-.search input{all:unset;flex:1}
-.btn{cursor:pointer;border-radius:10px;padding:8px 12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--ink)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin:14px 0 20px}
-.card{background:var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);overflow:hidden}
-.thumb{aspect-ratio:16/9;background:linear-gradient(#231115,#130f10)}
-.meta{padding:10px 12px}
-.ep{font-weight:800;color:var(--gold);font-size:12px;letter-spacing:.6px}
-.name{margin:4px 0 8px;font-weight:800}
-.actions{display:flex;gap:8px;padding:0 12px 12px}
-footer{opacity:.75;text-align:center;padding:18px;font-size:12px}
-/* modal */
-dialog{border:none;border-radius:14px;background:var(--panel);color:var(--ink);width:min(880px,96vw)}
-dialog::backdrop{background:rgba(0,0,0,.7)}
-.modal{padding:12px}
-.modal h3{margin:0 0 6px}
-.player{width:100%;max-height:70vh;border-radius:10px;background:#000;border:1px solid rgba(255,255,255,.08)}
-.small{font-size:12px;color:var(--muted)}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>สืบคดีปริศนาหมอยาตำรับโคมแดง — Ep.1–24</title>
+  <style>
+    body{margin:0;font-family:system-ui,"Noto Sans Thai",sans-serif;background:#0b0a0a;color:#f5e9da}
+    header{position:sticky;top:0;background:#121011;padding:12px 16px;border-bottom:1px solid #ffffff14}
+    h1{margin:0;font-size:18px}
+    .wrap{max-width:1000px;margin:auto;padding:16px}
+    .tools{display:flex;gap:8px;margin-top:8px}
+    input[type="search"]{flex:1;padding:8px 10px;border-radius:10px;border:1px solid #ffffff22;background:#171314;color:#f5e9da}
+    button{padding:8px 12px;border-radius:10px;border:1px solid #ffffff22;background:#ffffff12;color:#f5e9da;cursor:pointer}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+    .card{border:1px solid #ffffff1a;border-radius:12px;background:#171314;overflow:hidden}
+    .thumb{aspect-ratio:16/9;background:#1e1416}
+    .meta{padding:10px 12px}
+    .ep{font-weight:700;color:#c7a56a;font-size:12px}
+    .name{margin-top:4px;font-weight:700}
+    .actions{display:flex;gap:8px;padding:10px 12px}
+    dialog{border:none;border-radius:12px;background:#171314;color:#f5e9da;width:min(900px,96vw)}
+    dialog::backdrop{background:rgba(0,0,0,.7)}
+    video{width:100%;max-height:70vh;background:#000;border-radius:10px;border:1px solid #ffffff1a}
+  </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="h1">สืบคดีปริศนาหมอยาตำรับโคมแดง — Ep.1–24</div>
-    <div class="sub">เวอร์ชันเรียบง่าย: กำหนดค่า GitHub ด้านล่างในโค้ด แล้วสตรีมไฟล์รายตอน Ep.1 … Ep.24 อัตโนมัติ</div>
-    <div class="tools">
-      <label class="search"><span>🔎</span><input id="q" placeholder="ค้นหา: Ep หรือคำสำคัญ"/></label>
-      <button class="btn" id="sortBtn">สลับเรียงใหม่↔เก่า</button>
+  <header>
+    <div class="wrap">
+      <h1>สืบคดีปริศนาหมอยาตำรับโคมแดง — Ep.1–24</h1>
+      <div class="tools">
+        <input id="q" type="search" placeholder="ค้นหา: Ep หรือคำสำคัญ" />
+        <button id="sortBtn">สลับเรียงใหม่↔เก่า</button>
+      </div>
     </div>
-  </div>
-</header><main class="wrap">
-  <section class="grid" id="grid"></section>
-</main><footer>โค้ดเดียว • สตรีมจาก GitHub RAW/Pages • ใช้ส่วนตัวเท่านั้น</footer><dialog id="modal">
-  <div class="modal">
-    <h3 id="mTitle">Ep. ??</h3>
-    <div class="small" id="mMeta">—</div>
-    <div style="margin:8px 0 10px">
-      <video id="player" class="player" controls preload="metadata"></video>
+  </header>
+
+  <main class="wrap">
+    <section id="grid" class="grid"></section>
+  </main>
+
+  <dialog id="modal">
+    <div style="padding:12px">
+      <h3 id="mTitle" style="margin:0 0 6px">Ep. ??</h3>
+      <div id="mMeta" style="opacity:.8;font-size:14px;margin-bottom:8px">—</div>
+      <video id="player" controls preload="metadata"></video>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+        <button id="mClose">ปิด</button>
+      </div>
     </div>
-    <div class="actions"><button class="btn" id="mClose">ปิด</button></div>
-  </div>
-</dialog><script>
-/*========== CONFIG แบบเรียบง่าย (ไฟล์อยู่โปรเจกต์เดียวกับ GitHub) ==========*/
-// วาง index.html และโฟลเดอร์วิดีโอไว้ใน repo เดียวกัน
-// ตัวอย่างโครงสร้าง:
-//   / (root ของ repo)
-//     index.html
-//     /videos
-//       Ep.1สืบคดีปริศนาหมอยาตำรับโคมแดงSS2พากย์ไทย.mp4
-//       ... Ep.24สืบคดีปริศนาหมอยาตำรับโคมแดงSS2พากย์ไทย.mp4
+  </dialog>
 
-// โฟลเดอร์วิดีโอสัมพัทธ์จากหน้าเว็บนี้
-const BASE_PATH = 'videos'
-// แพทเทิร์นชื่อไฟล์รายตอน — ใช้ {N} (1..24) หรือ {NN} (01..24)
-const FILE_PATTERN = 'Ep.{N}สืบคดีปริศนาหมอยาตำรับโคมแดงSS2พากย์ไทย.mp4'
+  <script>
+    /* ====== CONFIG (ไฟล์อยู่โฟลเดอร์เดียวกับ index.html) ====== */
+    // ถ้าชื่อไฟล์เป็น Ep.1…Ep.24 ใช้ {N}
+    // ถ้าชื่อไฟล์เป็น Ep.01…Ep.24 ใช้ {NN}
+    const FILE_PATTERN = 'Ep.{N}สืบคดีปริศนาหมอยาตำรับโคมแดงSS2พากย์ไทย.mp4';
+    /* ============================================================ */
 
-function fmtName(n){ const NN = String(n).padStart(2,'0'); return FILE_PATTERN.replaceAll('{NN}',NN).replaceAll('{N}',String(n)) }
-function urlEp(n){
-  const base = BASE_PATH ? `${BASE_PATH.replace(/\/$/, '')}/` : ''
-  return `${base}${encodeURIComponent(fmtName(n))}`
-}
-/*=================================================================*/
-// เลือกโหมดลิงก์: 'RAW' (raw.githubusercontent.com) หรือ 'PAGES' (GitHub Pages)
-// (โหมด GitHub RAW/Pages ไม่จำเป็นแล้ว เพราะใช้พาธสัมพัทธ์ภายในโปรเจกต์เดียว)</div>
-      <div class="name">${ep.name}</div>
-    </div>
-    <div class="actions">
-      <button class="btn" data-act="play">เล่น</button>
-      <a class="btn" href="${ep.url}" target="_blank" rel="noopener">เปิดลิงก์</a>
-    </div>`
-  el.addEventListener('click', (e)=>{
-    const act = e.target.closest('button')?.dataset?.act
-    if(act==='play') open(ep)
-  })
-  return el
-}
+    function fmtName(n){
+      const NN = String(n).padStart(2,'0');
+      return FILE_PATTERN.replaceAll('{NN}',NN).replaceAll('{N}',String(n));
+    }
+    function urlEp(n){ return encodeURIComponent(fmtName(n)); }
 
-function render(){
-  grid.innerHTML=''
-  let data = [...EPISODES]
-  if(sortDesc) data.reverse()
-  const s = (q.value||'').toLowerCase()
-  data.filter(ep=> !s || (ep.title+ep.name).toLowerCase().includes(s)).forEach(ep=> grid.appendChild(card(ep)))
-}
+    const EPISODES = Array.from({length:24}, (_,i)=>({
+      id: i+1,
+      title: `Ep. ${String(i+1).padStart(2,'0')}`,
+      name: `ตอนที่ ${String(i+1).padStart(2,'0')} — โคมแดง`,
+      url: urlEp(i+1)
+    }));
 
-function open(ep){
-  mTitle.textContent = ep.title
-  mMeta.textContent = ep.name
-  player.src = ep.url
-  modal.showModal()
-}
-$('#mClose').onclick = ()=>{ player.pause(); modal.close() }
+    const $ = (q,el=document)=>el.querySelector(q);
+    const grid=$('#grid'), modal=$('#modal'), player=$('#player'), mTitle=$('#mTitle'), mMeta=$('#mMeta'), q=$('#q');
+    let sortDesc=false;
 
-q.addEventListener('input', render)
-$('#sortBtn').addEventListener('click', ()=>{ sortDesc=!sortDesc; render() })
+    function card(ep){
+      const el=document.createElement('article'); el.className='card';
+      el.innerHTML=`<div class="thumb"></div>
+        <div class="meta"><div class="ep">${ep.title}</div><div class="name">${ep.name}</div></div>
+        <div class="actions"><button data-act="play">เล่น</button>
+        <a class="btn" href="${ep.url}" target="_blank">เปิดลิงก์</a></div>`;
+      el.addEventListener('click',ev=>{
+        if(ev.target.dataset.act==='play') open(ep);
+      });
+      return el;
+    }
 
-render()
-</script></body>
+    function render(){
+      grid.innerHTML='';
+      let data=[...EPISODES];
+      if(sortDesc) data.reverse();
+      const s=(q.value||'').toLowerCase();
+      data.filter(ep=>!s||(ep.title+ep.name).toLowerCase().includes(s))
+          .forEach(ep=>grid.appendChild(card(ep)));
+    }
+
+    function open(ep){
+      mTitle.textContent=ep.title;
+      mMeta.textContent=ep.name;
+      player.src=ep.url;
+      modal.showModal();
+    }
+
+    $('#mClose').onclick=()=>{player.pause();modal.close();};
+    q.oninput=render;
+    $('#sortBtn').onclick=()=>{sortDesc=!sortDesc;render();};
+    render();
+  </script>
+</body>
 </html>
