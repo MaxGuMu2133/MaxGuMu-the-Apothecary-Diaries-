@@ -1,282 +1,135 @@
 <!doctype html>
+
 <html lang="th">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>สืบคดีปริศนาหมอยาตำรับโคมแดง | Ep. 1–24</title>
-  <meta name="description" content="เว็บส่วนตัวสำหรับดูตอน (Ep.1–24) โทนอนิเมะสไตล์โคมแดง" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700;900&family=Marcellus+SC&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#0b0a0a; --bg-soft:#121011; --panel:#161314; --ink:#f5e9da; --ink-dim:#d8cbb9;
-      --primary:#b71c1c; --primary-2:#e53935; --accent:#c7a56a; --accent-2:#ffdd99;
-      --glass:rgba(255,255,255,.04); --shadow:0 10px 30px rgba(0,0,0,.45);
-      --radius:18px; --trans:220ms cubic-bezier(.2,.7,.2,1);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; background:radial-gradient(1200px 600px at 80% -10%, rgba(183,28,28,.25), transparent 60%),
-               radial-gradient(900px 500px at 10% 0%, rgba(231,111,81,.18), transparent 55%), var(--bg);
-      color:var(--ink); font-family:"Noto Sans Thai", system-ui, sans-serif; letter-spacing:.2px;
-    }
-    body::before{
-      content:""; position:fixed; inset:0; pointer-events:none; opacity:.08;
-      background-image:linear-gradient(90deg, var(--primary) 1px, transparent 1px), linear-gradient(var(--primary) 1px, transparent 1px);
-      background-size:44px 44px, 44px 44px; mask:linear-gradient(#000, transparent 80%);
-    }
-    header{ position:sticky; top:0; z-index:20; background:linear-gradient( to bottom, rgba(11,10,10,.9), rgba(11,10,10,.6) 70%, transparent );
-      backdrop-filter: blur(6px); border-bottom:1px solid rgba(255,255,255,.05); }
-    .wrap{ max-width:1200px; margin-inline:auto; padding:18px 18px; }
-    .brand{ display:flex; align-items:center; gap:16px; }
-    .logo{ width:42px; height:42px; border-radius:12px; background:radial-gradient(circle at 50% 35%, var(--accent-2), var(--accent) 55%, #7a5225 70%); box-shadow:0 0 0 2px rgba(199,165,106,.35), 0 12px 30px rgba(199,165,106,.18); position:relative; isolation:isolate; }
-    .logo::after{ content:""; position:absolute; inset:8px 10px; border-radius:10px; border:2px solid rgba(0,0,0,.35); box-shadow:inset 0 0 0 2px rgba(255,255,255,.15); }
-    .title{ font-family:"Marcellus SC", serif; letter-spacing:1px; font-size:clamp(18px, 2.2vw, 26px); line-height:1.1 }
-    .subtitle{ font-weight:400; color:var(--ink-dim); font-size:13px; margin-top:2px }
-    .tools{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:10px }
-    .search{ flex:1 1 340px; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:var(--panel); border:1px solid rgba(255,255,255,.06); }
-    .search input{ all:unset; flex:1; font-size:15px; color:var(--ink); }
-    .btn, .chip{ cursor:pointer; user-select:none; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.08); background:var(--glass);
-      transition:transform var(--trans), background var(--trans), border-color var(--trans), box-shadow var(--trans); font-weight:600; font-size:14px }
-    .btn:hover, .chip:hover{ transform:translateY(-1px); background:rgba(255,255,255,.06); box-shadow:var(--shadow); }
-    .chip[aria-pressed="true"]{ background:linear-gradient( to bottom, rgba(183,28,28,.22), rgba(183,28,28,.12) ); border-color:rgba(229,57,53,.45) }
-    .hero{ position:relative; overflow:hidden; border-radius:calc(var(--radius) + 6px); margin:16px 0 26px; border:1px solid rgba(255,255,255,.08); }
-    .hero .inner{ padding:26px 22px; background:linear-gradient(120deg, rgba(183,28,28,.18), rgba(11,10,10,.8)); }
-    .hero h1{ margin:0 0 6px; font-size:clamp(22px, 3.5vw, 38px); font-weight:900; letter-spacing:.5px }
-    .hero p{ margin:0; color:var(--ink-dim); max-width:60ch }
-    .grid{ display:grid; grid-template-columns:repeat( auto-fill, minmax(220px, 1fr) ); gap:16px }
-    .card{ position:relative; overflow:hidden; border-radius:var(--radius); background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)), var(--panel);
-      border:1px solid rgba(255,255,255,.06); box-shadow:var(--shadow); isolation:isolate; transition: transform var(--trans), box-shadow var(--trans), border-color var(--trans); }
-    .card:hover{ transform: translateY(-4px); border-color: rgba(199,165,106,.5); box-shadow: 0 18px 40px rgba(0,0,0,.55); }
-    .thumb{ aspect-ratio:16/9; position:relative; background: radial-gradient(100% 60% at 80% 20%, rgba(229,57,53,.25), transparent 60%), radial-gradient(80% 60% at 0% 100%, rgba(199,165,106,.18), transparent 50%), linear-gradient( to bottom, #211416, #120f10 ); }
-    .watched-flag{ position:absolute; left:10px; top:10px; padding:6px 8px; font-size:11px; border-radius:8px; background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.08); display:none }
-    .card[data-watched="true"] .watched-flag{ display:inline-block }
-    .meta{ padding:12px 14px 14px }
-    .ep{ font-weight:800; color:var(--accent); font-size:13px; letter-spacing:.6px; text-transform:uppercase }
-    .name{ margin:6px 0 10px; font-size:16px; font-weight:700 }
-    .tags{ display:flex; gap:8px; flex-wrap:wrap }
-    .tag{ font-size:11px; padding:6px 9px; border-radius:999px; background:rgba(199,165,106,.12); color:var(--accent-2); border:1px solid rgba(199,165,106,.25) }
-    .card .actions{ display:flex; gap:10px; padding:0 14px 14px }
-    .btn.primary{ background:linear-gradient( to bottom, rgba(183,28,28,.5), rgba(183,28,28,.25) ); border-color: rgba(229,57,53,.55) }
-    .btn.ghost{ background:rgba(255,255,255,.02) }
-    dialog{ border:none; padding:0; border-radius:20px; width:min(760px, 96vw); background:var(--panel); color:var(--ink); box-shadow:0 50px 140px rgba(0,0,0,.6); }
-    dialog::backdrop{ background:rgba(0,0,0,.7) }
-    .modal{ padding:18px }
-    .modal header{ position:relative; background:none; border:none; }
-    .modal h3{ margin:0 0 2px; font-size:22px }
-    .modal .muted{ color:var(--ink-dim); font-size:13px }
-    .modal .content{ margin-top:14px; line-height:1.7 }
-    .modal .row{ display:flex; gap:14px; margin-top:18px; flex-wrap:wrap }
-    .modal .row .btn{ flex:1 1 220px }
-    .player{ width:100%; max-height:65vh; border-radius:14px; background:#000; outline:1px solid rgba(255,255,255,.06); box-shadow: var(--shadow); }
-    footer{ opacity:.75; text-align:center; padding:28px 16px; font-size:13px }
-    ::-webkit-scrollbar{ width:12px; height:12px }
-    ::-webkit-scrollbar-thumb{ background:linear-gradient(var(--primary), var(--primary-2)); border-radius:10px; border:3px solid var(--bg) }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>สืบคดีปริศนาหมอยาตำรับโคมแดง | Ep.1–24 (โค้ดเดียว เรียบง่าย)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;500;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0a0a;--panel:#171314;--ink:#f5e9da;--muted:#d8cbb9;--red:#b71c1c;--gold:#c7a56a;--r:14px}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;background:radial-gradient(900px 400px at 90% -10%,rgba(183,28,28,.2),transparent 60%),#0b0a0a;color:var(--ink);font-family:"Noto Sans Thai",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:9;background:linear-gradient(to bottom,rgba(11,10,10,.95),rgba(11,10,10,.6));border-bottom:1px solid rgba(255,255,255,.06)}
+.wrap{max-width:1000px;margin:auto;padding:14px}
+.h1{font-weight:800;letter-spacing:.3px}
+.sub{color:var(--muted);font-size:12px;margin-top:4px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.search{flex:1 1 320px;display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px}
+.search input{all:unset;flex:1}
+.btn{cursor:pointer;border-radius:10px;padding:8px 12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin:14px 0 20px}
+.card{background:var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);overflow:hidden}
+.thumb{aspect-ratio:16/9;background:linear-gradient(#231115,#130f10)}
+.meta{padding:10px 12px}
+.ep{font-weight:800;color:var(--gold);font-size:12px;letter-spacing:.6px}
+.name{margin:4px 0 8px;font-weight:800}
+.actions{display:flex;gap:8px;padding:0 12px 12px}
+footer{opacity:.75;text-align:center;padding:18px;font-size:12px}
+/* modal */
+dialog{border:none;border-radius:14px;background:var(--panel);color:var(--ink);width:min(880px,96vw)}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+.modal{padding:12px}
+.modal h3{margin:0 0 6px}
+.player{width:100%;max-height:70vh;border-radius:10px;background:#000;border:1px solid rgba(255,255,255,.08)}
+.small{font-size:12px;color:var(--muted)}
+</style>
 </head>
 <body>
-  <header>
-    <div class="wrap">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <div class="title">สืบคดีปริศนาหมอยาตำรับโคมแดง</div>
-          <div class="subtitle">The Apothecary Diaries — Ep. 1–24 (เว็บส่วนตัว)</div>
-        </div>
-      </div>
-      <div class="tools">
-        <label class="search" aria-label="ค้นหาตอน">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input id="q" placeholder="ค้นหา: หมายเลขตอน ชื่อตอน หรือคำสำคัญ… (เช่น 'Ep 12' หรือ 'พิษ')" />
-        </label>
-        <button class="chip" id="toggleWatched" aria-pressed="false">ซ่อนตอนที่ดูแล้ว</button>
-        <button class="chip" id="sortDesc" aria-pressed="false">เรียงจาก Ep. ใหม่ → เก่า</button>
-      </div>
+<header>
+  <div class="wrap">
+    <div class="h1">สืบคดีปริศนาหมอยาตำรับโคมแดง — Ep.1–24</div>
+    <div class="sub">เวอร์ชันเรียบง่าย: กำหนดค่า GitHub ด้านล่างในโค้ด แล้วสตรีมไฟล์รายตอน Ep.1 … Ep.24 อัตโนมัติ</div>
+    <div class="tools">
+      <label class="search"><span>🔎</span><input id="q" placeholder="ค้นหา: Ep หรือคำสำคัญ"/></label>
+      <button class="btn" id="sortBtn">สลับเรียงใหม่↔เก่า</button>
     </div>
-  </header>
-
-  <main class="wrap">
-    <section class="hero" aria-label="ส่วนแนะนำ">
-      <div class="inner">
-        <h1>คัดสรรบรรยากาศโคมแดงแบบอนิเมะ</h1>
-        <p>อัปโหลดไฟล์ .mp4 ทั้ง 24 ไฟล์ไว้โฟลเดอร์เดียวกับหน้านี้ ชื่อไฟล์เป็น Ep.1…Ep.24 ตามรูปแบบไทยนี้ ระบบจะลิงก์ให้อัตโนมัติ</p>
-      </div>
-    </section>
-
-    <section class="grid" id="grid" aria-label="รายการตอน 1–24"></section>
-  </main>
-
-  <footer>ทำใช้ส่วนตัวเท่านั้น — ดีไซน์โดยคุณ • โค้ดเทมเพลตโดย ChatGPT</footer>
-
-  <dialog id="modal">
-    <div class="modal">
-      <header class="wrap-min">
-        <h3 id="mTitle">Ep. ??</h3>
-        <div class="muted" id="mMeta">—</div>
-      </header>
-      <div class="content" id="mDesc">คำบรรยายตอนจะอยู่ตรงนี้</div>
-      <div class="content" style="margin-top:10px">
-        <video id="player" class="player" controls preload="metadata"></video>
-        <div class="muted" style="margin-top:6px">รองรับไฟล์ <strong>.mp4</strong> แบบพาธสัมพัทธ์ ไม่ต้องตั้งค่า GitHub</div>
-      </div>
-      <div class="row">
-        <button class="btn primary" id="mPlayInline">เล่น / หยุดชั่วคราว</button>
-        <button class="btn ghost" id="mPick">เลือกไฟล์ .mp4 จากเครื่อง</button>
-        <button class="btn ghost" id="mClose">ปิด</button>
-      </div>
+  </div>
+</header><main class="wrap">
+  <section class="grid" id="grid"></section>
+</main><footer>โค้ดเดียว • สตรีมจาก GitHub RAW/Pages • ใช้ส่วนตัวเท่านั้น</footer><dialog id="modal">
+  <div class="modal">
+    <h3 id="mTitle">Ep. ??</h3>
+    <div class="small" id="mMeta">—</div>
+    <div style="margin:8px 0 10px">
+      <video id="player" class="player" controls preload="metadata"></video>
     </div>
-  </dialog>
-  <input id="fileInput" type="file" accept="video/mp4" style="display:none" />
+    <div class="actions"><button class="btn" id="mClose">ปิด</button></div>
+  </div>
+</dialog><script>
+/***************** CONFIG — แก้ค่าให้ตรง GitHub ของคุณ *****************/
+// เลือกโหมดลิงก์: 'RAW' (raw.githubusercontent.com) หรือ 'PAGES' (GitHub Pages)
+const MODE = 'RAW'
+// กรอกข้อมูล repo ของคุณ
+const GH = {
+  owner: 'your-username',       // ← ใส่ของคุณ
+  repo:  'your-repo',           // ← ใส่ของคุณ
+  branch:'main',                // ใช้เมื่อ MODE='RAW'
+  basePath: 'videos',           // โฟลเดอร์เก็บไฟล์ mp4 (ว่างได้)
+  pagesBase: 'https://your-username.github.io/your-repo' // ใช้เมื่อ MODE='PAGES'
+}
+// แพทเทิร์นชื่อไฟล์รายตอน — ใช้ {N} (1..24) หรือ {NN} (01..24)
+const FILE_PATTERN = 'Ep.{N}สืบคดีปริศนาหมอยาตำรับโคมแดงSS2พากย์ไทย.mp4'
+/************************************************************************/
 
-  <script>
-    // ====== สร้างลิงก์ไฟล์ Ep.1–24 แบบ "พาธสัมพัทธ์" ======
-    const filenameTemplate = 'Ep.{N}สืบคดีปริศนาหมอยาตำรับโคมแดง.mp4' // ใช้ {N} หรือแก้เป็น {NN} หากตั้งชื่อ Ep.01
-    function formatFileName(n){
-      const NN = String(n).padStart(2, '0')
-      return filenameTemplate.replaceAll('{NN}', NN).replaceAll('{N}', String(n))
-    }
-    function epUrl(n){
-      // อยู่โฟลเดอร์เดียวกับ index.html
-      return encodeURIComponent(formatFileName(n))
-    }
+function ghBase(){
+  const bp = GH.basePath ? '/' + GH.basePath.replace(/^\/+|\/+$/g,'') : ''
+  if(MODE==='RAW') return `https://raw.githubusercontent.com/${GH.owner}/${GH.repo}/${GH.branch}${bp}`
+  return `${GH.pagesBase.replace(/\/$/,'')}${bp}`
+}
+function fmtName(n){ const NN = String(n).padStart(2,'0'); return FILE_PATTERN.replaceAll('{NN}',NN).replaceAll('{N}',String(n)) }
+function urlEp(n){ return `${ghBase()}/${encodeURIComponent(fmtName(n))}` }
 
-    // ====== ข้อมูลตอน ======
-    const EPISODES = Array.from({length:24}, (_,i)=>{
-      const n = i+1
-      const ep = n.toString().padStart(2,'0')
-      return {
-        id:n,
-        title:`Ep. ${ep}`,
-        nameTH:`ตอนที่ ${ep} — สืบคดีปริศนาหมอยาตำรับโคมแดง`,
-        url: epUrl(n),
-        tags:['ลึกลับ','สืบสวน','ตำรับยา'],
-        desc:`ตอนที่ ${n} ของซีรีส์โทนโคมแดง`,
-      }
-    })
+const EPISODES = Array.from({length:24}, (_,i)=>({
+  id:i+1,
+  title:`Ep. ${String(i+1).padStart(2,'0')}`,
+  name:`ตอนที่ ${String(i+1).padStart(2,'0')} — โคมแดง`,
+  url: urlEp(i+1)
+}))
 
-    // ====== ยูทิล ======
-    const $ = (q, el=document)=> el.querySelector(q)
-    const ls = {
-      get(k,def){ try{ return JSON.parse(localStorage.getItem(k)) ?? def }catch{ return def } },
-      set(k,v){ localStorage.setItem(k, JSON.stringify(v)) }
-    }
-    const STATE = {
-      watched: ls.get('watched',{}),
-      hideWatched: ls.get('hideWatched', false),
-      sortDesc: ls.get('sortDesc', false),
-      q: '',
-      localSrc: ls.get('localSrc', {}),
-      progress: ls.get('progress', {})
-    }
+const $ = (q,el=document)=> el.querySelector(q)
+const grid = $('#grid')
+const modal = $('#modal'), player=$('#player'), mTitle=$('#mTitle'), mMeta=$('#mMeta'), q=$('#q')
+let sortDesc = false
 
-    const grid = $('#grid')
-    function cardTemplate(ep){
-      const card = document.createElement('article')
-      card.className = 'card'
-      card.tabIndex = 0
-      card.dataset.id = ep.id
-      card.dataset.title = (ep.title + ' ' + ep.nameTH + ' ' + ep.tags.join(' ')).toLowerCase()
-      card.dataset.watched = !!STATE.watched[ep.id]
-      card.innerHTML = `
-        <div class="thumb">
-          <div class="watched-flag">✓ ดูแล้ว</div>
-        </div>
-        <div class="meta">
-          <div class="ep">${ep.title}</div>
-          <div class="name">${ep.nameTH}</div>
-          <div class="tags">${ep.tags.map(t=>`<span class='tag'>${t}</span>`).join('')}</div>
-        </div>
-        <div class="actions">
-          <button class="btn primary play">เล่น</button>
-          <button class="btn ghost detail">รายละเอียด</button>
-        </div>`
-      card.addEventListener('click', e=>{ if(!(e.target.closest('.btn'))) openDetail(ep) })
-      card.querySelector('.play').addEventListener('click', e=>{ e.stopPropagation(); playEp(ep) })
-      card.querySelector('.detail').addEventListener('click', e=>{ e.stopPropagation(); openDetail(ep) })
-      card.addEventListener('keydown', e=>{ if(e.key==='Enter') openDetail(ep) })
-      return card
-    }
+function card(ep){
+  const el = document.createElement('article'); el.className='card'; el.dataset.id = ep.id
+  el.innerHTML = `
+    <div class="thumb"></div>
+    <div class="meta">
+      <div class="ep">${ep.title}</div>
+      <div class="name">${ep.name}</div>
+    </div>
+    <div class="actions">
+      <button class="btn" data-act="play">เล่น</button>
+      <a class="btn" href="${ep.url}" target="_blank" rel="noopener">เปิดลิงก์</a>
+    </div>`
+  el.addEventListener('click', (e)=>{
+    const act = e.target.closest('button')?.dataset?.act
+    if(act==='play') open(ep)
+  })
+  return el
+}
 
-    function render(){
-      grid.innerHTML = ''
-      let data = [...EPISODES]
-      if(STATE.sortDesc) data.reverse()
-      const q = STATE.q.trim().toLowerCase()
-      for(const ep of data){
-        const isWatched = !!STATE.watched[ep.id]
-        const match = !q || (ep.title+' '+ep.nameTH+' '+ep.tags.join(' ')).toLowerCase().includes(q)
-        if((STATE.hideWatched && isWatched) || !match) continue
-        const el = cardTemplate(ep)
-        el.dataset.watched = isWatched
-        grid.appendChild(el)
-      }
-      $('#toggleWatched').setAttribute('aria-pressed', STATE.hideWatched)
-      $('#sortDesc').setAttribute('aria-pressed', STATE.sortDesc)
-    }
+function render(){
+  grid.innerHTML=''
+  let data = [...EPISODES]
+  if(sortDesc) data.reverse()
+  const s = (q.value||'').toLowerCase()
+  data.filter(ep=> !s || (ep.title+ep.name).toLowerCase().includes(s)).forEach(ep=> grid.appendChild(card(ep)))
+}
 
-    function playEp(ep){
-      openDetail(ep)
-      STATE.watched[ep.id] = true
-      ls.set('watched', STATE.watched)
-      render()
-    }
+function open(ep){
+  mTitle.textContent = ep.title
+  mMeta.textContent = ep.name
+  player.src = ep.url
+  modal.showModal()
+}
+$('#mClose').onclick = ()=>{ player.pause(); modal.close() }
 
-    // ====== Modal / Player ======
-    const modal = $('#modal'), mTitle=$('#mTitle'), mMeta=$('#mMeta'), mDesc=$('#mDesc')
-    const player=$('#player'), fileInput=$('#fileInput')
-    const btnPlayInline=$('#mPlayInline'), btnPick=$('#mPick')
+q.addEventListener('input', render)
+$('#sortBtn').addEventListener('click', ()=>{ sortDesc=!sortDesc; render() })
 
-    function setPlayerSource(ep){
-      const localSrc = STATE.localSrc[ep.id]
-      const chosen = localSrc || (ep.url && ep.url !== '#' ? ep.url : '')
-      const resume = STATE.progress[ep.id] || 0
-      if(!chosen){ player.removeAttribute('src'); player.load(); return }
-      const same = player.src && player.src.endsWith(chosen)
-      if(!same){ player.src = chosen; player.load() }
-      const onMeta = ()=>{
-        try{ if(resume>0) player.currentTime = resume }catch{}
-        player.removeEventListener('loadedmetadata', onMeta)
-      }
-      player.addEventListener('loadedmetadata', onMeta)
-    }
-
-    function openDetail(ep){
-      mTitle.textContent = `${ep.title}`
-      mMeta.textContent = ep.nameTH
-      mDesc.textContent = ep.desc
-      setPlayerSource(ep)
-      modal.showModal()
-      if(player.src){ player.play().catch(()=>{}) }
-      const onPlayOnce = ()=>{ STATE.watched[ep.id]=true; ls.set('watched',STATE.watched); render(); player.removeEventListener('play', onPlayOnce) }
-      player.addEventListener('play', onPlayOnce)
-      player.addEventListener('timeupdate', ()=>{ if(!isNaN(player.currentTime)){ STATE.progress[ep.id]=Math.floor(player.currentTime); ls.set('progress', STATE.progress) }})
-    }
-
-    document.getElementById('mClose').addEventListener('click', ()=> modal.close())
-    modal.addEventListener('click', (e)=>{ if(e.target === modal) modal.close() })
-    btnPlayInline.addEventListener('click', ()=>{ if(player.paused) player.play(); else player.pause() })
-    btnPick.addEventListener('click', ()=> fileInput.click())
-    fileInput.addEventListener('change', ()=>{
-      const file = fileInput.files?.[0]; if(!file) return
-      const url = URL.createObjectURL(file)
-      const epNum = parseInt(mTitle.textContent.replace(/[^0-9]/g,''),10)
-      if(!isNaN(epNum)){
-        STATE.localSrc[epNum] = url; ls.set('localSrc', STATE.localSrc)
-        player.src = url; player.load(); player.play().catch(()=>{})
-        STATE.watched[epNum]=true; ls.set('watched',STATE.watched); render()
-      }
-    })
-
-    // ====== เครื่องมือ ======
-    const q = document.getElementById('q')
-    q.addEventListener('input', ()=>{ STATE.q = q.value; render() })
-    document.getElementById('toggleWatched').addEventListener('click', ()=>{ STATE.hideWatched=!STATE.hideWatched; ls.set('hideWatched', STATE.hideWatched); render() })
-    document.getElementById('sortDesc').addEventListener('click', ()=>{ STATE.sortDesc=!STATE.sortDesc; ls.set('sortDesc', STATE.sortDesc); render() })
-
-    window.addEventListener('keydown', (e)=>{ if(e.ctrlKey && e.key.toLowerCase()==='k'){ e.preventDefault(); q.focus() } if(e.key==='/' && document.activeElement!==q){ e.preventDefault(); q.focus() } })
-
-    // start
-    render()
-  </script>
-</body>
-  </html>
+render()
+</script></body>
+</html>
