@@ -5,29 +5,26 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>สืบคดีปริศนาหมอยาตำรับโคมแดง — SS1 & SS2</title>
 <style>
-  body{margin:0;font-family:"Noto Sans Thai",system-ui,sans-serif;background:#0b0a0a;color:#f5e9da}
-  header{position:sticky;top:0;background:#121011;padding:12px 16px;border-bottom:1px solid #ffffff14}
-  h1{margin:0;font-size:18px}
-  .wrap{max-width:1000px;margin:auto;padding:16px}
-  .tools{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-  input[type="search"]{flex:1;padding:8px 10px;border-radius:10px;border:1px solid #ffffff22;background:#171314;color:#f5e9da}
-  button{padding:8px 12px;border-radius:10px;border:1px solid #ffffff22;background:#ffffff12;color:#f5e9da;cursor:pointer}
-  button.active{background:#b71c1c;border-color:#e53935}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-  .card{border:1px solid #ffffff1a;border-radius:12px;background:#171314;overflow:hidden;cursor:pointer}
-  .thumb{aspect-ratio:16/9;background:#1e1416}
-  .meta{padding:10px 12px}
-  .ep{font-weight:700;color:#c7a56a;font-size:12px}
-  .name{margin-top:4px;font-weight:700}
-  .actions{display:flex;gap:8px;padding:10px 12px}
-  .actions .btn{cursor:pointer}
-  dialog{border:none;border-radius:12px;background:#171314;color:#f5e9da;width:min(900px,96vw)}
-  dialog::backdrop{background:rgba(0,0,0,.7)}
-  /* กล่องตัวเล่น 16:9 แน่นอน */
-  .playerBox{width:100%;aspect-ratio:16/9;position:relative;background:#000;border-radius:10px;overflow:hidden}
-  video,.gframe{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
-  .gwrap{display:none;width:100%;height:100%}
-  .err{margin-top:8px;color:#ffb3b3;font-size:12px;display:none}
+body{margin:0;font-family:"Noto Sans Thai",sans-serif;background:#0b0a0a;color:#f5e9da}
+header{background:#121011;padding:12px 16px;position:sticky;top:0}
+h1{margin:0;font-size:18px}
+.wrap{max-width:960px;margin:auto;padding:16px}
+.tools{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+input[type="search"]{flex:1;padding:8px 10px;border-radius:8px;border:1px solid #ffffff22;background:#171314;color:#f5e9da}
+button{padding:8px 12px;border-radius:8px;border:1px solid #ffffff22;background:#ffffff12;color:#f5e9da;cursor:pointer}
+button.active{background:#b71c1c;border-color:#e53935}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:20px}
+.card{border:1px solid #ffffff22;border-radius:12px;background:#171314;overflow:hidden;cursor:pointer}
+.thumb{aspect-ratio:16/9;background:#1e1416 center/cover no-repeat}
+.meta{padding:10px}
+.ep{font-weight:700;color:#c7a56a;font-size:13px}
+.name{margin-top:4px;font-weight:700;font-size:14px}
+dialog{border:none;border-radius:10px;background:#171314;color:#f5e9da;width:min(900px,96vw)}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+.playerbox{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden}
+video,.gframe{width:100%;height:100%;object-fit:cover}
+.gwrap{display:none;width:100%;height:100%}
+.err{margin-top:8px;color:#ffb3b3;font-size:12px;display:none}
 </style>
 </head>
 <body>
@@ -35,10 +32,9 @@
   <div class="wrap">
     <h1>สืบคดีปริศนาหมอยาตำรับโคมแดง — SS1 & SS2</h1>
     <div class="tools">
-      <button id="ss1Btn" class="active">ซีซัน 1</button>
-      <button id="ss2Btn">ซีซัน 2</button>
-      <input id="q" type="search" placeholder="ค้นหา: Ep หรือคำสำคัญ"/>
-      <button id="sortBtn">สลับเรียงใหม่↔เก่า</button>
+      <button id="ss1Btn" class="active">SS1</button>
+      <button id="ss2Btn">SS2</button>
+      <input id="q" type="search" placeholder="ค้นหา Ep..."/>
     </div>
   </div>
 </header>
@@ -51,209 +47,88 @@
   <div style="padding:12px">
     <h3 id="mTitle" style="margin:0 0 6px">Ep. ??</h3>
     <div id="mMeta" style="opacity:.8;font-size:14px;margin-bottom:8px">—</div>
-
-    <div class="playerBox">
+    <div class="playerbox">
       <video id="player" controls preload="metadata"></video>
-      <div class="gwrap" id="gwrap">
-        <iframe id="gframe" class="gframe" allow="autoplay; fullscreen" allowfullscreen></iframe>
-      </div>
+      <div class="gwrap" id="gwrap"><iframe id="gframe" class="gframe" allowfullscreen></iframe></div>
     </div>
-
     <div class="err" id="errBox"></div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
-      <a id="openRaw" class="btn" href="#" target="_blank" rel="noopener">เปิดลิงก์</a>
+    <div style="text-align:right;margin-top:10px">
+      <a id="openRaw" href="#" target="_blank" rel="noopener" style="color:#c7a56a;text-decoration:none;margin-right:10px">เปิดลิงก์</a>
       <button id="mClose">ปิด</button>
     </div>
   </div>
 </dialog>
 
 <script>
-/* ===== CONFIG =====
-   - SS2 Ep.1 คือไฟล์ใน repo: "Ep.1สืบคดีปริศนาหมอยาตำรับโคมแดงSS2.mp4"
-   - SS2 Ep.2 ใช้ Google Drive (ตามลิงก์ที่ให้)
-   - SS1 และตอนอื่นๆ ใช้ pattern พื้นฐาน (เติม override ได้ภายหลัง)
-*/
+/* ---------- CONFIG ---------- */
 const FILE_PATTERN_SS1 = 'Ep.{N}หมอยาตำรับโคมแดงSS1.mp4';
-const FILE_PATTERN_SS2 = 'Ep.{N}สืบคดีปริศนาหมอยาตำรับโคมแดงSS2.mp4';
-
+const FILE_PATTERN_SS2 = 'Ep.{N}หมอยาตำรับโคมแดงSS2.mp4';
 const DRIVE_OVERRIDES = {
-  // SS2 — Ep.1 (ใหม่ — ใช้ลิงก์นี้)
+  // ใส่ลิงก์ Google Drive ที่ต้องการ
   'ss2-1': 'https://drive.google.com/file/d/1G7sOvbPMpy8E7xRKfH9GFbCF0j5cQjH-/view?usp=drivesdk',
-
-  // SS2 — Ep.2 (ลิงก์เดิมของคุณ)
-  'ss2-2': 'https://drive.google.com/file/d/1eXtRFiYkhfI-CurQZB1HtX8kCB_uC4cx/view?usp=drivesdk',
-
-  // SS2 — Ep.3 (สำรองถ้ามี)
-  // 'ss2-3': 'https://drive.google.com/file/d/.../view?usp=drivesdk'
+  'ss2-2': 'https://drive.google.com/file/d/1eXtRFiYkhfI-CurQZB1HtX8kCB_uC4cx/view?usp=drivesdk'
 };
-/* =============== END CONFIG =============== */
+const BG_URL = 'BG.png'; // ปก SS2 ทุกตอน
+/* ----------------------------- */
 
-function fmtName(n,pattern){
-  const NN=String(n).padStart(2,'0');
-  return pattern.replaceAll('{NN}',NN).replaceAll('{N}',String(n));
-}
-function localUrl(n,pattern){ return encodeURIComponent(fmtName(n,pattern)); }
-
-function parseDrive(viewUrl){
-  const m = viewUrl.match(/\/d\/([^/]+)/);
+function parseDrive(url){
+  const m = url.match(/\/d\/([^/]+)/);
   if(!m) return null;
-  const id = m[1];
+  const id=m[1];
   return {
-    id,
-    direct:  `https://drive.google.com/uc?export=download&id=${id}`, // ลองเล่นด้วย <video> ก่อน
-    preview: `https://drive.google.com/file/d/${id}/preview`,       // fallback iframe
-    view:    viewUrl
+    direct:`https://drive.google.com/uc?export=download&id=${id}`,
+    preview:`https://drive.google.com/file/d/${id}/preview`,
+    view:url
   };
 }
-
-function buildEpisodes(pattern,label,seasonKey){
+function fmtName(n,pat){return pat.replaceAll('{N}',n).replaceAll('{NN}',String(n).padStart(2,'0'));}
+function build(pattern,label,season){
   return Array.from({length:24},(_,i)=>{
-    const ep = i+1;
-    const key = `${seasonKey}-${ep}`;
-    const overrideView = DRIVE_OVERRIDES[key];
-    let url, openLink, isDrive=false, preview=null;
-
-    if(overrideView){
-      const d = parseDrive(overrideView);
-      if(d){ url=d.direct; openLink=d.view; isDrive=true; preview=d.preview; }
-      else { url=overrideView; openLink=overrideView; isDrive=true; }
-    }else{
-      url = localUrl(ep,pattern);
-      openLink = url;
-    }
-
-    return {
-      id: ep,
-      title: `Ep. ${String(ep).padStart(2,'0')}`,
-      name:  `ตอนที่ ${ep} — ${label}`,
-      url, openLink, isDrive, preview
-    };
+    const n=i+1; const key=`${season}-${n}`;
+    const d=DRIVE_OVERRIDES[key]?parseDrive(DRIVE_OVERRIDES[key]):null;
+    const url=d?d.direct:encodeURIComponent(fmtName(n,pattern));
+    const open=d?d.view:url;
+    return{n,label,season,url,open,preview:d?d.preview:null,isDrive:!!d};
   });
 }
+const SEASONS={ss1:build(FILE_PATTERN_SS1,'SS1','ss1'),ss2:build(FILE_PATTERN_SS2,'SS2','ss2')};
 
-const SEASONS = {
-  ss1: buildEpisodes(FILE_PATTERN_SS1,'โคมแดง SS1','ss1'),
-  ss2: buildEpisodes(FILE_PATTERN_SS2,'โคมแดง SS2','ss2')
-};
-
-let currentSeason='ss2'; // เริ่มที่ SS2 เพื่อให้ Ep.1 ตรงกับชื่อไฟล์ที่คุณใช้
-let sortDesc=false, currentEp=null;
-
-const $=(q,el=document)=>el.querySelector(q);
-const grid=$('#grid'), modal=$('#modal'), q=$('#q');
-const player=$('#player'), gwrap=$('#gwrap'), gframe=$('#gframe');
-const mTitle=$('#mTitle'), mMeta=$('#mMeta'), errBox=$('#errBox'), openRaw=$('#openRaw');
+let season='ss2';
+const $=q=>document.querySelector(q);
+const grid=$('#grid'),modal=$('#modal'),player=$('#player'),gwrap=$('#gwrap'),gframe=$('#gframe');
+const err=$('#errBox'),title=$('#mTitle'),meta=$('#mMeta'),openRaw=$('#openRaw');
+function clearErr(){err.textContent='';err.style.display='none';}
+function showErr(t){err.textContent=t;err.style.display='block';}
+function showVideo(){player.style.display='block';gwrap.style.display='none';gframe.src='';}
+function showIframe(src){player.pause();player.removeAttribute('src');player.style.display='none';gwrap.style.display='block';gframe.src=src;}
 
 function card(ep){
-  const el=document.createElement('article');
-  el.className='card'; el.tabIndex=0; el.setAttribute('role','button');
-  el.innerHTML=`<div class="thumb"></div>
-    <div class="meta"><div class="ep">${ep.title}</div><div class="name">${ep.name}</div></div>
-    <div class="actions">
-      <button class="btn" data-act="play">เล่น</button>
-      <a class="btn" href="${ep.openLink}" target="_blank" rel="noopener">เปิดลิงก์</a>
-    </div>`;
-  el.addEventListener('click',ev=>{
-    const isCtrl=ev.target.closest('button,a');
-    if(isCtrl){ if(ev.target.dataset.act==='play') open(ep); return; }
-    open(ep);
-  });
-  el.addEventListener('keydown',ev=>{ if(ev.key==='Enter') open(ep); });
+  const el=document.createElement('div');
+  el.className='card';
+  const thumb=season==='ss2'?`style="background-image:url('${BG_URL}')"`:'';
+  el.innerHTML=`<div class="thumb" ${thumb}></div><div class="meta"><div class="ep">Ep.${ep.n}</div><div class="name">${ep.label}</div></div>`;
+  el.onclick=()=>openEp(ep);
   return el;
 }
-
 function render(){
   grid.innerHTML='';
-  let data=[...SEASONS[currentSeason]];
-  if(sortDesc) data.reverse();
-  const s=(q.value||'').toLowerCase();
-  data.filter(ep=>!s||(ep.title+ep.name).toLowerCase().includes(s))
-      .forEach(ep=>grid.appendChild(card(ep)));
-  // ปุ่ม active
-  $('#ss1Btn').classList.toggle('active', currentSeason==='ss1');
-  $('#ss2Btn').classList.toggle('active', currentSeason==='ss2');
+  const s=($('#q').value||'').toLowerCase();
+  SEASONS[season].filter(e=>!s||String(e.n).includes(s))
+    .forEach(e=>grid.appendChild(card(e)));
+  $('#ss1Btn').classList.toggle('active',season==='ss1');
+  $('#ss2Btn').classList.toggle('active',season==='ss2');
 }
-
-/* ---------- ตัวช่วยตัวเล่น / ข้อผิดพลาด ---------- */
-function showVideo(){ player.style.display='block'; gwrap.style.display='none'; gframe.src=''; }
-function showIframe(src){ player.pause(); player.removeAttribute('src'); player.style.display='none'; gwrap.style.display='block'; gframe.src=src; }
-function clearErr(){ errBox.textContent=''; errBox.style.display='none'; }
-function showErr(msg){ errBox.textContent=msg; errBox.style.display='block'; }
-
-/* เช็คไฟล์ล่วงหน้า: ดูว่าเป็น LFS pointer / content-type ไม่ใช่วิดีโอ / 404 */
-async function probeUrl(url){
-  try{
-    const res = await fetch(url, { headers: { Range: 'bytes=0-2047' } });
-    if(!res.ok) return { ok:false, reason:'NETWORK', status:res.status };
-    const ct = (res.headers.get('content-type')||'').toLowerCase();
-    const buf = await res.arrayBuffer();
-    const head = new TextDecoder('utf-8').decode(new Uint8Array(buf));
-    if(head.startsWith('version https://git-lfs.github.com/spec/v1')){
-      return { ok:false, reason:'GIT_LFS' };
-    }
-    if(ct && !ct.includes('video')){
-      return { ok:false, reason:'CONTENT_TYPE', ct };
-    }
-    return { ok:true, ct };
-  }catch{
-    return { ok:false, reason:'NETWORK' };
-  }
+async function openEp(ep){
+  title.textContent=`Ep.${ep.n}`;
+  meta.textContent=`ตอนที่ ${ep.n} — ${ep.label}`;
+  clearErr(); openRaw.href=ep.open;
+  showVideo(); player.src=ep.url; modal.showModal();
 }
-
-/* เปิดตอน (พยายามไฟล์ตรงก่อน, แล้วค่อย fallback เป็น iframe สำหรับ Drive) */
-async function open(ep){
-  currentEp=ep;
-  mTitle.textContent=ep.title;
-  mMeta.textContent=ep.name;
-  clearErr();
-  openRaw.href=ep.openLink||ep.url;
-
-  // ถ้าเป็น Google Drive: เริ่มด้วย <video> (direct); ถ้า error เดี๋ยว onerror จะสลับ iframe ให้เอง
-  if(ep.isDrive){
-    showVideo();
-    player.src=ep.url;
-    modal.showModal();
-    return;
-  }
-
-  // ถ้าเป็นไฟล์ใน repo: เช็คล่วงหน้าก่อน
-  const info = await probeUrl(ep.url);
-  if(!info.ok){
-    if(info.reason==='GIT_LFS')      showErr('ไฟล์นี้เป็น Git LFS pointer (ยังไม่ได้ deploy ไฟล์จริงด้วย Actions lfs:true)');
-    else if(info.reason==='CONTENT_TYPE') showErr('Content-Type ไม่ใช่วิดีโอ (content-type: '+info.ct+')');
-    else if(info.reason==='NETWORK')  showErr('โหลดไฟล์ไม่ได้ (อาจ 404/สิทธิ์ไม่พอ)');
-    else                              showErr('เล่นวิดีโอไม่ได้ (สาเหตุไม่ทราบ)');
-    showVideo();
-    player.removeAttribute('src');
-    modal.showModal();
-    return;
-  }
-
-  showVideo();
-  player.src=ep.url;
-  modal.showModal();
-}
-
-/* ถ้าไฟล์ตรงเล่นไม่ได้ ให้ fallback เป็น Google Drive preview (เฉพาะตอนที่เป็น Drive) */
-player.addEventListener('error', ()=>{
-  const e=player.error;
-  const code=e?.code||0;
-  const map={1:'USER_ABORT',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
-  showErr('เล่นวิดีโอไม่ได้: '+(map[code]||'อื่นๆ'));
-  if(currentEp?.isDrive && currentEp.preview){
-    showIframe(currentEp.preview);
-    errBox.textContent = 'สลับไปใช้ตัวเล่นของ Google Drive (preview)';
-  }
-});
-
-/* UI events */
+player.addEventListener('error',()=>{showErr('เล่นไม่ได้'); if(player.src.includes('google')&&gframe&&season==='ss2'){showIframe(SEASONS[season].find(e=>player.src.includes(e.url))?.preview||'');}});
 $('#mClose').onclick=()=>{player.pause();modal.close();};
-$('#sortBtn').onclick=()=>{sortDesc=!sortDesc;render();};
-q.oninput=render;
-$('#ss1Btn').onclick=()=>{currentSeason='ss1';render();};
-$('#ss2Btn').onclick=()=>{currentSeason='ss2';render();};
-
-/* เริ่มต้นที่ SS2 ตามไฟล์ของคุณ */
+$('#ss1Btn').onclick=()=>{season='ss1';render();};
+$('#ss2Btn').onclick=()=>{season='ss2';render();};
+$('#q').oninput=render;
 render();
 </script>
 </body>
