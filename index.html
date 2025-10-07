@@ -1,111 +1,89 @@
-<!doctype html>
-<html lang="th">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>สืบคดีปริศนาหมอยาตำรับโคมแดงSS2 — Ep.1–24</title>
-  <style>
-    body{margin:0;font-family:system-ui,"Noto Sans Thai",sans-serif;background:#0b0a0a;color:#f5e9da}
-    header{position:sticky;top:0;background:#121011;padding:12px 16px;border-bottom:1px solid #ffffff14}
-    h1{margin:0;font-size:18px}
-    .wrap{max-width:1000px;margin:auto;padding:16px}
-    .tools{display:flex;gap:8px;margin-top:8px}
-    input[type="search"]{flex:1;padding:8px 10px;border-radius:10px;border:1px solid #ffffff22;background:#171314;color:#f5e9da}
-    button{padding:8px 12px;border-radius:10px;border:1px solid #ffffff22;background:#ffffff12;color:#f5e9da;cursor:pointer}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-    .card{border:1px solid #ffffff1a;border-radius:12px;background:#171314;overflow:hidden}
-    .thumb{aspect-ratio:16/9;background:#1e1416}
-    .meta{padding:10px 12px}
-    .ep{font-weight:700;color:#c7a56a;font-size:12px}
-    .name{margin-top:4px;font-weight:700}
-    .actions{display:flex;gap:8px;padding:10px 12px}
-    dialog{border:none;border-radius:12px;background:#171314;color:#f5e9da;width:min(900px,96vw)}
-    dialog::backdrop{background:rgba(0,0,0,.7)}
-    video{width:100%;max-height:70vh;background:#000;border-radius:10px;border:1px solid #ffffff1a}
-  </style>
-</head>
-<body>
-  <header>
-    <div class="wrap">
-      <h1>สืบคดีปริศนาหมอยาตำรับโคมแดงSS2 — Ep.1–24</h1>
-      <div class="tools">
-        <input id="q" type="search" placeholder="ค้นหา: Ep หรือคำสำคัญ" />
-        <button id="sortBtn">สลับเรียงใหม่↔เก่า</button>
-      </div>
-    </div>
-  </header>
+<script>
+// === CONFIG ===
+const FILE_PATTERN_SS1 = 'Ep.{N}หมอยาตำรับโคมแดงSS1.mp4';
+const FILE_PATTERN_SS2 = 'Ep.{N}หมอยาตำรับโคมแดงSS2.mp4';
 
-  <main class="wrap">
-    <section id="grid" class="grid"></section>
-  </main>
+// ลิงก์ Google Drive (ตอนที่มีลิงก์แทนไฟล์ในโปรเจกต์)
+const DRIVE_OVERRIDES = {
+  // Ep.2 ใช้ลิงก์ Google Drive ตามที่คุณให้มา
+  'ss1-2': 'https://drive.google.com/file/d/1eXtRFiYkhfI-CurQZB1HtX8kCB_uC4cx/view?usp=drivesdk'
+};
 
-  <dialog id="modal">
-    <div style="padding:12px">
-      <h3 id="mTitle" style="margin:0 0 6px">Ep. ??</h3>
-      <div id="mMeta" style="opacity:.8;font-size:14px;margin-bottom:8px">—</div>
-      <video id="player" controls preload="metadata"></video>
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
-        <button id="mClose">ปิด</button>
-      </div>
-    </div>
-  </dialog>
+// === สคริปต์สร้างตอน ===
+function fmtName(n,pattern){
+  const NN = String(n).padStart(2,'0');
+  return pattern.replaceAll('{NN}',NN).replaceAll('{N}',String(n));
+}
+function localUrl(n,pattern){ return encodeURIComponent(fmtName(n,pattern)); }
+function driveDirectFromView(viewUrl){
+  const m = viewUrl.match(/\\/d\\/([^/]+)/);
+  if(!m) return viewUrl;
+  const id = m[1];
+  return `https://drive.google.com/uc?export=download&id=${id}`;
+}
+function buildEpisodes(pattern,label,seasonKey){
+  return Array.from({length:24},(_,i)=>{
+    const ep=i+1;
+    const key=`${seasonKey}-${ep}`;
+    const overrideView = DRIVE_OVERRIDES[key];
+    const url = overrideView ? driveDirectFromView(overrideView) : localUrl(ep,pattern);
+    return { id:ep, title:`Ep. ${String(ep).padStart(2,'0')}`, name:`ตอนที่ ${String(ep).padStart(2,'0')} — ${label}`, url };
+  });
+}
+const SEASONS={
+  ss1:buildEpisodes(FILE_PATTERN_SS1,'โคมแดง SS1','ss1'),
+  ss2:buildEpisodes(FILE_PATTERN_SS2,'โคมแดง SS2','ss2')
+};
 
-  <script>
-    /* ====== CONFIG (ไฟล์อยู่โฟลเดอร์เดียวกับ index.html) ====== */
-    // ถ้าชื่อไฟล์เป็น Ep.1…Ep.24 ใช้ {N}
-    // ถ้าชื่อไฟล์เป็น Ep.01…Ep.24 ใช้ {NN}
-    const FILE_PATTERN = 'Ep.{N}สืบคดีปริศนาหมอยาตำรับโคมแดงSS2พากย์ไทย.mp4';
-    /* ============================================================ */
+// === การแสดงผล ===
+let currentSeason='ss1', sortDesc=false;
+const $=(q,el=document)=>el.querySelector(q);
+const grid=$('#grid'),modal=$('#modal'),player=$('#player'),mTitle=$('#mTitle'),mMeta=$('#mMeta'),q=$('#q');
+const errBox=$('#errBox'), openRaw=$('#openRaw');
 
-    function fmtName(n){
-      const NN = String(n).padStart(2,'0');
-      return FILE_PATTERN.replaceAll('{NN}',NN).replaceAll('{N}',String(n));
-    }
-    function urlEp(n){ return encodeURIComponent(fmtName(n)); }
+function card(ep){
+  const el=document.createElement('article'); el.className='card';
+  el.innerHTML=`<div class="thumb"></div>
+    <div class="meta"><div class="ep">${ep.title}</div><div class="name">${ep.name}</div></div>
+    <div class="actions"><button data-act="play">เล่น</button>
+    <a class="btn" href="${ep.url}" target="_blank" rel="noopener">เปิดลิงก์</a></div>`;
+  el.addEventListener('click',ev=>{
+    if(ev.target.dataset.act==='play') open(ep);
+  });
+  return el;
+}
 
-    const EPISODES = Array.from({length:24}, (_,i)=>({
-      id: i+1,
-      title: `Ep. ${String(i+1).padStart(2,'0')}`,
-      name: `ตอนที่ ${String(i+1).padStart(2,'0')} — โคมแดง`,
-      url: urlEp(i+1)
-    }));
+function render(){
+  grid.innerHTML='';
+  let data=[...SEASONS[currentSeason]];
+  if(sortDesc)data.reverse();
+  const s=(q.value||'').toLowerCase();
+  data.filter(ep=>!s||(ep.title+ep.name).toLowerCase().includes(s))
+      .forEach(ep=>grid.appendChild(card(ep)));
+}
 
-    const $ = (q,el=document)=>el.querySelector(q);
-    const grid=$('#grid'), modal=$('#modal'), player=$('#player'), mTitle=$('#mTitle'), mMeta=$('#mMeta'), q=$('#q');
-    let sortDesc=false;
+function clearVideoError(){ errBox.textContent=''; errBox.style.display='none'; }
+function showVideoError(msg){ errBox.textContent='เล่นวิดีโอไม่ได้: '+msg+' | URL: '+player.currentSrc; errBox.style.display='block'; }
 
-    function card(ep){
-      const el=document.createElement('article'); el.className='card';
-      el.innerHTML=`<div class="thumb"></div>
-        <div class="meta"><div class="ep">${ep.title}</div><div class="name">${ep.name}</div></div>
-        <div class="actions"><button data-act="play">เล่น</button>
-        <a class="btn" href="${ep.url}" target="_blank">เปิดลิงก์</a></div>`;
-      el.addEventListener('click',ev=>{
-        if(ev.target.dataset.act==='play') open(ep);
-      });
-      return el;
-    }
+function open(ep){
+  mTitle.textContent=ep.title;
+  mMeta.textContent=ep.name;
+  clearVideoError();
+  player.src=ep.url;
+  openRaw.href=ep.url;
+  modal.showModal();
+}
 
-    function render(){
-      grid.innerHTML='';
-      let data=[...EPISODES];
-      if(sortDesc) data.reverse();
-      const s=(q.value||'').toLowerCase();
-      data.filter(ep=>!s||(ep.title+ep.name).toLowerCase().includes(s))
-          .forEach(ep=>grid.appendChild(card(ep)));
-    }
+player.addEventListener('error',()=>{
+  const e=player.error;
+  const map={1:'USER_ABORT',2:'NETWORK (โหลดไม่ได้)',3:'DECODE (ถอดรหัสไม่ได้)',4:'SRC_NOT_SUPPORTED (ไฟล์/URL ไม่รองรับ)'};
+  showVideoError(e?map[e.code]||('code='+e.code):'ไม่ทราบสาเหตุ');
+});
 
-    function open(ep){
-      mTitle.textContent=ep.title;
-      mMeta.textContent=ep.name;
-      player.src=ep.url;
-      modal.showModal();
-    }
-
-    $('#mClose').onclick=()=>{player.pause();modal.close();};
-    q.oninput=render;
-    $('#sortBtn').onclick=()=>{sortDesc=!sortDesc;render();};
-    render();
-  </script>
-</body>
-</html>
+$('#mClose').onclick=()=>{player.pause();modal.close();};
+$('#sortBtn').onclick=()=>{sortDesc=!sortDesc;render();};
+q.oninput=render;
+$('#ss1Btn').onclick=()=>{currentSeason='ss1';$('#ss1Btn').classList.add('active');$('#ss2Btn').classList.remove('active');render();};
+$('#ss2Btn').onclick=()=>{currentSeason='ss2';$('#ss2Btn').classList.add('active');$('#ss1Btn').classList.remove('active');render();};
+render();
+         </script>
